@@ -803,4 +803,253 @@
     }
     render();
   }
+
+  /* =================================================================================================================
+     F4b · internal pages. Each block runs only if its markup is on the page; everything degrades to plain HTML.
+     ================================================================================================================= */
+
+  /* ---------- form: the page's service already chosen (service pages; the tile stays editable) ---------- */
+  $$('form[data-preselect]').forEach(function (form) {
+    var v = form.getAttribute('data-preselect');
+    if (!v) return;
+    $$('input[name="service"]', form).forEach(function (r) { if (r.value === v) r.checked = true; });
+  });
+
+  /* ---------- ZIP starter: step 1 in the first screen. It carries the ZIP into the page's form; with the service
+     already chosen it moves the form to step 2 (the module validates as usual), otherwise it stops on the tiles.
+     Without JS it is a plain link-like form that lands on the form section. ---------- */
+  $$('form[data-starter]').forEach(function (st) {
+    var target = doc.getElementById(st.getAttribute('data-starter'));
+    var zin = $('input', st);
+    var err = $('[data-starter-err]', st);
+    if (!target || !zin) return;
+    st.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var zip = String(zin.value || '').replace(/\D/g, '').slice(0, 5);
+      zin.value = zip;
+      if (!/^\d{5}$/.test(zip)) {
+        if (err) err.hidden = false;
+        zin.setAttribute('aria-invalid', 'true');
+        zin.focus();
+        return;
+      }
+      if (err) err.hidden = true;
+      zin.removeAttribute('aria-invalid');
+      var z = target.elements.zip;
+      if (z) {
+        z.value = zip;
+        z.dispatchEvent(new Event('input', { bubbles: true }));
+        z.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      smoothTo(target.closest('section') || target);
+      var chosen = $('input[name="service"]:checked', target);
+      var onStep1 = !$('[data-cs-step="1"]', target).hidden;
+      setTimeout(function () {
+        if (chosen && onStep1) {
+          var next = $('[data-cs-step="1"] [data-cs-next]', target);
+          if (next) next.click();
+        } else if (!chosen) {
+          var first = $('input[name="service"]', target);
+          if (first) first.focus({ preventScroll: true });
+        }
+      }, reduceMotion ? 0 : 900);
+    });
+    zin.addEventListener('input', function () { if (err && !err.hidden && /^\d{5}$/.test(zin.value.replace(/\D/g, ''))) { err.hidden = true; zin.removeAttribute('aria-invalid'); } });
+  });
+
+  /* ---------- the mobile bar's "Schedule" goes to this page's form when the page has one ---------- */
+  (function () {
+    var bar = $('[data-mbar]');
+    var sch = bar && $('[data-float-type="schedule"]', bar);
+    if (sch && !$('[data-page="home"]')) { var to = $('#quote') || $('#schedule'); if (to) sch.setAttribute('href', '#' + to.id); }
+  })();
+
+  /* ---------- reveal: content already in the HTML gets a one-time entrance when it arrives ---------- */
+  var revs = $$('[data-reveal]');
+  if (revs.length) {
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      var rio = new IntersectionObserver(function (es) {
+        es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('is-in'); rio.unobserve(en.target); } });
+      }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
+      revs.forEach(function (el) { rio.observe(el); });
+    } else revs.forEach(function (el) { el.classList.add('is-in'); });
+  }
+
+  /* ---------- YouTube background videos (the client's own clips; poster frame underneath) ----------
+     Same rules as the home's Vimeo: never with reduced motion, Save-Data / 2G or an automated browser; mounted after
+     `load` and only when the section is near; paused off screen; pause button (WCAG 2.2.2) once it plays. */
+  var YT = 'https://www.youtube-nocookie.com';
+  var ytBgs = [];
+  function ytCmd(f, func) {
+    if (f && f.contentWindow) f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: [] }), YT);
+  }
+  if (!reduceMotion && !saveData && !automated && 'IntersectionObserver' in window) {
+    $$('[data-yt]').forEach(function (host) {
+      var section = host.closest('section');
+      var p = { host: host, iframe: null, inView: false, armed: false, userPaused: false, toggle: section ? $('[data-video-toggle]', section) : null };
+      ytBgs.push(p);
+      var mount = function () {
+        if (p.iframe) return;
+        var id = encodeURIComponent(host.getAttribute('data-yt'));
+        var q = 'autoplay=1&mute=1&controls=0&loop=1&playlist=' + id + '&playsinline=1&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&fs=0&enablejsapi=1';
+        var s = parseInt(host.getAttribute('data-yt-start') || '0', 10);
+        if (s) q += '&start=' + s;
+        q += '&origin=' + encodeURIComponent(window.location.origin);
+        var f = doc.createElement('iframe');
+        f.src = YT + '/embed/' + id + '?' + q;
+        f.title = host.getAttribute('data-yt-title') || 'Background video';
+        f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+        f.setAttribute('tabindex', '-1');
+        f.setAttribute('aria-hidden', 'true');
+        f.addEventListener('load', function () {
+          // ask the player to report its state (it answers with onStateChange / infoDelivery messages)
+          f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: id }), YT);
+        });
+        p.iframe = f;
+        host.appendChild(f);
+      };
+      p.mount = mount;
+      if (p.toggle) {
+        p.toggle.addEventListener('click', function () {
+          p.userPaused = !p.userPaused;
+          ytCmd(p.iframe, p.userPaused ? 'pauseVideo' : 'playVideo');
+          p.toggle.setAttribute('aria-pressed', p.userPaused ? 'true' : 'false');
+          var use = $('use', p.toggle);
+          if (use) use.setAttribute('href', p.userPaused ? '#i-play' : '#i-pause');
+          var label = $('[data-video-label]', p.toggle);
+          if (label) label.textContent = p.userPaused ? 'Play background video' : 'Pause background video';
+        });
+      }
+      new IntersectionObserver(function (es) {
+        es.forEach(function (en) {
+          p.inView = en.isIntersecting;
+          if (p.inView && p.armed) mount();
+          if (!p.iframe) return;
+          ytCmd(p.iframe, p.inView && !p.userPaused ? 'playVideo' : 'pauseVideo');
+        });
+      }, { rootMargin: '200px 0px' }).observe(section || host);
+    });
+    window.addEventListener('message', function (e) {
+      if (e.origin !== YT) return;
+      var d = e.data;
+      if (typeof d === 'string') { try { d = JSON.parse(d); } catch (err) { return; } }
+      if (!d || typeof d !== 'object') return;
+      var state = d.event === 'onStateChange' ? d.info : (d.event === 'infoDelivery' && d.info ? d.info.playerState : null);
+      if (state !== 1) return;
+      ytBgs.forEach(function (p) {
+        if (!p.iframe || e.source !== p.iframe.contentWindow || p.iframe.classList.contains('is-playing')) return;
+        p.iframe.classList.add('is-playing');
+        if (p.toggle) p.toggle.hidden = false;
+        if (!p.inView || p.userPaused) ytCmd(p.iframe, 'pauseVideo');
+      });
+    });
+    var armYt = function () {
+      setTimeout(function () {
+        ytBgs.forEach(function (p) { p.armed = true; if (p.inView) p.mount(); });
+      }, 700);
+    };
+    if (doc.readyState === 'complete') armYt();
+    else window.addEventListener('load', armYt, { once: true });
+  }
+
+  /* ---------- video testimonials: the poster and a real link to YouTube; the player loads only on play ---------- */
+  $$('[data-ytplay]').forEach(function (box) {
+    var a = $('.ytp__play', box);
+    if (!a) return;
+    a.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      var id = encodeURIComponent(box.getAttribute('data-ytplay'));
+      var f = doc.createElement('iframe');
+      f.src = YT + '/embed/' + id + '?autoplay=1&rel=0&playsinline=1&modestbranding=1';
+      f.title = box.getAttribute('data-yt-title') || 'Video';
+      f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+      f.setAttribute('allowfullscreen', '');
+      box.appendChild(f);
+      a.remove();
+      f.focus();
+    });
+  });
+
+  /* ---------- inspiration gallery: filters + full-screen viewer (<dialog>, arrows, swipe, Esc returns focus) ---------- */
+  var gal = $('[data-gallery]');
+  if (gal) {
+    var gItems = $$('li', gal);
+    var fBtns = $$('[data-filter]');
+    var fLive = $('[data-filter-live]');
+    fBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.getAttribute('data-filter');
+        fBtns.forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+        var n = 0;
+        gItems.forEach(function (li) {
+          var show = f === 'all' || li.getAttribute('data-cat') === f;
+          li.hidden = !show;
+          if (show) n++;
+        });
+        if (fLive) fLive.textContent = n + ' photos shown';
+      });
+    });
+    if (typeof HTMLDialogElement === 'function') {
+      var dlg = doc.createElement('dialog');
+      dlg.className = 'lb';
+      dlg.setAttribute('aria-label', 'Photo viewer');
+      dlg.innerHTML =
+        '<div class="lb__top"><span data-lb-count></span><button class="lb__btn" type="button" data-lb-close><svg class="ic" aria-hidden="true"><use href="#i-close"></use></svg><span class="sr-only">Close the photo viewer</span></button></div>' +
+        '<figure class="lb__fig"><img alt="" data-lb-img>' +
+        '<button class="lb__btn lb__nav lb__nav--p" type="button" data-lb-prev><svg class="ic" aria-hidden="true"><use href="#i-chev-left"></use></svg><span class="sr-only">Previous photo</span></button>' +
+        '<button class="lb__btn lb__nav lb__nav--n" type="button" data-lb-next><svg class="ic" aria-hidden="true"><use href="#i-chev-right"></use></svg><span class="sr-only">Next photo</span></button></figure>' +
+        '<p class="lb__cap" data-lb-cap aria-live="polite"></p>';
+      doc.body.appendChild(dlg);
+      var lbImg = $('[data-lb-img]', dlg);
+      var lbCap = $('[data-lb-cap]', dlg);
+      var lbCount = $('[data-lb-count]', dlg);
+      var cur = 0;
+      var opener2 = null;
+      var visible = function () { return gItems.filter(function (li) { return !li.hidden; }); };
+      var show = function (k) {
+        var list = visible();
+        if (!list.length) return;
+        cur = (k + list.length) % list.length;
+        var a = $('a', list[cur]);
+        var im = $('img', a);
+        lbImg.src = a.getAttribute('href');
+        lbImg.alt = im ? im.alt : '';
+        lbCap.textContent = im ? im.alt : '';
+        lbCount.textContent = (cur + 1) + ' / ' + list.length;
+      };
+      gal.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a');
+        if (!a || !gal.contains(a) || e.metaKey || e.ctrlKey || e.button !== 0) return;
+        e.preventDefault();
+        opener2 = a;
+        show(visible().indexOf(a.closest('li')));
+        dlg.showModal();
+        if (lenis) lenis.stop();
+        $('[data-lb-close]', dlg).focus();
+      });
+      $('[data-lb-close]', dlg).addEventListener('click', function () { dlg.close(); });
+      $('[data-lb-prev]', dlg).addEventListener('click', function () { show(cur - 1); });
+      $('[data-lb-next]', dlg).addEventListener('click', function () { show(cur + 1); });
+      dlg.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
+      });
+      dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+      dlg.addEventListener('close', function () {
+        if (lenis) lenis.start();
+        lbImg.removeAttribute('src');
+        if (opener2) opener2.focus();
+      });
+      var sx = null;
+      var fig = $('.lb__fig', dlg);
+      fig.addEventListener('pointerdown', function (e) { sx = e.clientX; });
+      fig.addEventListener('pointerup', function (e) {
+        if (sx === null) return;
+        var dx = e.clientX - sx;
+        sx = null;
+        if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+      });
+    }
+  }
 })();
