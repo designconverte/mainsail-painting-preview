@@ -4,8 +4,7 @@ window.CS_CONFIG = {
   siteId: 'mainsail-painting',
   lead: {
     endpoint: '/api/lead.php',
-    // a page can name its own thank-you (the Google Ads landing page uses /typ-lp/, its conversion URL)
-    redirect: (document.body && document.body.getAttribute('data-lead-redirect')) || '/thank-you/',
+    redirect: '/thank-you/',
     smsConsentVersion: 'sms-request-en-v1-2026-11-19'
   },
   serviceArea: { zips: [], outOfArea: 'accept-with-message' },
