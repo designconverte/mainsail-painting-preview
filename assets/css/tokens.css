@@ -17,12 +17,16 @@
   --error: #a3261b;
   --muted: #4f4f4f;
   --muted-on-dark: #d4d4d4;
-  --header-bg: rgba(148, 148, 148, 0.94);
+
+  --header-bg: rgba(12, 12, 12, 0.72);
+  --header-line: rgba(255, 255, 255, 0.12);
+  --brass-soft: rgba(196, 164, 110, 0.45);
+  --hairline-dark: rgba(255, 255, 255, 0.18);
   --hairline: rgba(35, 35, 35, 0.16);
 
   --f-display: 'Cormorant', 'Cormorant Fallback', Georgia, 'Times New Roman', serif;
   --f-body: 'Jost', 'Jost Fallback', Arial, Helvetica, sans-serif;
-  --f-label: 'Josefin Slab', 'Josefin Fallback', Georgia, serif;
+  --f-label: 'Outfit', 'Outfit Fallback', Arial, Helvetica, sans-serif;
 
   --t-hero: clamp(2.6rem, 1.4rem + 4.6vw, 4.75rem);
   --t-h2: clamp(2.25rem, 1.45rem + 3vw, 4rem);
@@ -30,11 +34,12 @@
   --t-body: clamp(1.0625rem, 0.95rem + 0.4vw, 1.25rem);
   --t-small: 1rem;
   --t-label: 0.8125rem;
-  --t-button: 1.125rem;
+  --t-button: 0.9375rem;
+  --ls-ui: 0.14em;
 
   --wrap: 1280px;
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 5rem);
   --radius: 5px;
-  --header-h: 62px;
+  --header-h: 68px;
   --mbar-h: 64px;
 }
