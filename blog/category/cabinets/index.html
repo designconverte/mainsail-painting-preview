@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="/mainsail-painting-preview/assets/css/blog.css">
 <script defer src="/mainsail-painting-preview/assets/js/blog.js"></script>
 <link rel="alternate" type="application/rss+xml" title="The Mainsail Painting Blog" href="https://designconverte.github.io/mainsail-painting-preview/blog/feed.xml">
+<link rel="alternate" type="application/feed+json" title="The Mainsail Painting Blog" href="https://designconverte.github.io/mainsail-painting-preview/blog/feed.json">
 <link rel="stylesheet" href="/mainsail-painting-preview/assets/css/fonts.css">
 <link rel="stylesheet" href="/mainsail-painting-preview/assets/css/tokens.css">
 <link rel="stylesheet" href="/mainsail-painting-preview/assets/css/form.css">
@@ -250,10 +251,18 @@
    "url": "https://mainsailpainting.com/blog/category/cabinets/",
    "name": "Cabinets & Kitchens articles",
    "description": "Articles on kitchen cabinet painting and refinishing: finishes, prep, cure time and living with the kitchen during the work.",
-   "isPartOf": {
-    "@id": "https://mainsailpainting.com/blog/#blog"
-   },
-   "inLanguage": "en-US"
+   "isPartOf": [
+    {
+     "@id": "https://mainsailpainting.com/blog/#blog"
+    },
+    {
+     "@id": "https://mainsailpainting.com/#website"
+    }
+   ],
+   "inLanguage": "en-US",
+   "breadcrumb": {
+    "@id": "https://mainsailpainting.com/blog/category/cabinets/#breadcrumb"
+   }
   },
   {
    "@type": "BreadcrumbList",
@@ -282,22 +291,22 @@
  ]
 }
 </script>
-<section class="bhead" aria-labelledby="blog-title">
-  <div class="wrap bhead__in">
+<section class="bband bband--photo" aria-labelledby="blog-title">
+  <div class="bband__media" aria-hidden="true"><img src="/mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-1200.webp" srcset="/mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-480.webp 480w, /mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-800.webp 800w, /mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-1200.webp 1200w" sizes="(max-width: 767px) 60vw, 100vw" width="1200" height="1600" alt="" loading="eager" decoding="async" class="bcover__img"><span class="bband__veil"></span></div>
+  <div class="wrap bband__in">
     <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/mainsail-painting-preview/">Home</a></li><li><a href="/mainsail-painting-preview/blog/">Blog</a></li><li><span aria-current="page">Cabinets &amp; Kitchens</span></li></ol></nav>
-    <h1 class="bhead__kicker" id="blog-title">Cabinets &amp; Kitchens · Mainsail Painting Blog</h1>
-    <p class="bhead__display">Cabinets &amp;amp; kitchens</p>
+    <h1 class="bband__kicker" id="blog-title">Cabinets &amp; Kitchens · Mainsail Painting Blog</h1>
+    <p class="bband__display">Cabinets &amp; kitchens</p>
 
   </div>
 </section>
-<div class="wrap blayout" data-blayout>
+<div class="wrap blayout">
   <div class="bmain">
     <nav class="bchips" aria-label="Blog categories"><ul><li><a href="/mainsail-painting-preview/blog/">All <span>9</span></a></li><li><a href="/mainsail-painting-preview/blog/category/exterior-painting/">Exterior Painting <span>2</span></a></li><li><a href="/mainsail-painting-preview/blog/category/interior-painting/">Interior Painting <span>2</span></a></li><li><a href="/mainsail-painting-preview/blog/category/cabinets/" aria-current="page">Cabinets &amp; Kitchens <span>1</span></a></li><li><a href="/mainsail-painting-preview/blog/category/decks-staining/">Decks &amp; Staining <span>1</span></a></li><li><a href="/mainsail-painting-preview/blog/category/color-design/">Color &amp; Design <span>2</span></a></li><li><a href="/mainsail-painting-preview/blog/category/planning/">Planning a Project <span>1</span></a></li></ul></nav>
-
     <div data-blist>
     <div class="bintro"><p>Cabinet painting and refinishing: finishes, prep and what the work looks like at home.</p><p><a class="link-arrow" href="/mainsail-painting-preview/kitchen-cabinet-refinishing/">Our kitchen cabinet refinishing service <svg class="ic" aria-hidden="true"><use href="#i-arrow-right"></use></svg></a></p></div>
 
-    <section class="bgrid-wrap" aria-labelledby="bgrid-t"><h2 class="bsec-t" id="bgrid-t">Articles</h2><div class="bgrid"><article class="bcard bcard--demo" data-demo>
+    <section class="bgrid-wrap" aria-labelledby="bgrid-t"><h2 class="bsec-t" id="bgrid-t">Articles</h2><div class="bgrid"><article class="bcard bcard--demo" data-demo data-reveal>
   <div class="bcard__media"><img src="/mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-1200.webp" srcset="/mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-480.webp 480w, /mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-800.webp 800w, /mainsail-painting-preview/assets/img/work/kitchen-cabinets-sage-green-island-1200.webp 1200w" sizes="(min-width: 1024px) 380px, 92vw" width="1200" height="1600" alt="" loading="lazy" decoding="async" class="bcard__img"><span class="bcard__demo">Sample card · layout preview</span></div>
   <div class="bcard__body"><p class="bcard__cat">Cabinets &amp; Kitchens</p><h3 class="bcard__t">How Long Does Painted Cabinetry Take to Cure?</h3><p class="bcard__x">Sample card for the layout preview: a future article on cure times for painted kitchen cabinets.</p><p class="bcard__meta">Not published: shown only in preview builds</p></div>
 </article></div></section>
@@ -305,10 +314,9 @@
     </div>
   </div>
   <aside class="bside" aria-label="Blog sidebar">
-  <section class="bside__box bside__box--search"><form class="bsearch" role="search" action="/mainsail-painting-preview/blog/" method="get" data-bsearch>
+  <section class="bside__box bside__box--search"><form class="bsearch" role="search" action="/mainsail-painting-preview/blog/" method="get">
   <label class="bsearch__l" for="side-q">Search the blog</label>
-  <div class="bsearch__row"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input class="bsearch__in" id="side-q" type="search" name="q" placeholder="Try &ldquo;dew&rdquo; or &ldquo;stain&rdquo;" autocomplete="off" enterkeyhint="search" data-bsearch-input><button class="bsearch__btn" type="submit">Search</button></div>
-
+  <div class="bsearch__row"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input class="bsearch__in" id="side-q" type="search" name="q" placeholder="Try &ldquo;dew&rdquo; or &ldquo;stain&rdquo;" autocomplete="off" enterkeyhint="search"></div>
 </form></section>
   <section class="bside__sched" aria-labelledby="side-sched-t">
     <p class="bside__eyebrow">Cape Cod &amp; South Shore</p>
@@ -316,13 +324,13 @@
     <p class="bside__sp">We visit within 24 hours and send a written quote within one business&nbsp;day.</p>
 
 <form class="starter" action="#schedule" data-starter="quote-schedule" novalidate>
-  <label class="starter__l" for="starter-zip">Schedule your visit</label>
+  <label class="starter__l" for="starter-zip-side">Schedule your visit</label>
   <div class="starter__row">
-    <input class="input" id="starter-zip" name="starter_zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="ZIP code of the home" aria-describedby="starter-err">
-    <button class="btn btn--brass" type="submit" data-hero-cta data-cta="hero-starter">Next <svg class="ic" aria-hidden="true"><use href="#i-arrow-right"></use></svg></button>
+    <input class="input" id="starter-zip-side" name="starter_zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="ZIP code of the home" aria-describedby="starter-err-side">
+    <button class="btn btn--brass" type="submit" data-hero-cta data-cta="blog-sidebar-starter">Next <svg class="ic" aria-hidden="true"><use href="#i-arrow-right"></use></svg></button>
   </div>
-  <p class="starter__err" id="starter-err" data-starter-err hidden>Enter a 5-digit ZIP code.</p>
-  <p class="starter__alt">Or call or text Vinny at <a href="tel:+15085931087" data-cta="hero-call" data-cta-location="hero">(508) 593-1087</a></p>
+  <p class="starter__err" id="starter-err-side" data-starter-err hidden>Enter a 5-digit ZIP code.</p>
+  <p class="starter__alt">Or call or text Vinny at <a href="tel:+15085931087" data-cta="blog-sidebar-call" data-cta-location="blog-sidebar">(508) 593-1087</a></p>
 </form>
 
   </section>
